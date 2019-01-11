@@ -3624,7 +3624,6 @@ void MainWindow::ReadSettings()
     m_ClipboardHistoryLimit = settings.clipboardHistoryLimit();
     // Our default fonts for book view/web preview
     SettingsStore::BookViewAppearance bookViewAppearance = settings.bookViewAppearance();
-<<<<<<< HEAD
     QWebEngineSettings *web_settings = QWebEngineSettings::globalSettings();
     web_settings->setFontSize(QWebEngineSettings::DefaultFontSize, bookViewAppearance.font_size);
     web_settings->setFontFamily(QWebEngineSettings::StandardFont, bookViewAppearance.font_family_standard);
@@ -3633,9 +3632,9 @@ void MainWindow::ReadSettings()
     // Check for existing custom Preview/Book View stylesheet in Prefs dir and load it if present
     QFileInfo CustomPreviewStylesheetInfo(QDir(Utility::DefinePrefsDir()).filePath(CUSTOM_PREVIEW_STYLE_FILENAME));
     if (CustomPreviewStylesheetInfo.exists() && CustomPreviewStylesheetInfo.isFile() && CustomPreviewStylesheetInfo.isReadable()) {
-        web_settings->setUserStyleSheetUrl(QUrl::fromLocalFile(CustomPreviewStylesheetInfo.absoluteFilePath()));
+        // TODO
+        //web_settings->setUserStyleSheetUrl(QUrl::fromLocalFile(CustomPreviewStylesheetInfo.absoluteFilePath()));
     }
->>>>>>> [update] initial commit
 }
 
 

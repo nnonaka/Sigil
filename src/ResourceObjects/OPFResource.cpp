@@ -808,7 +808,6 @@ void OPFResource::SetResourceAsCoverImage(ImageResource *image_resource)
     OPFParser p;
     p.parse(source);
     QString resource_id = GetResourceManifestID(image_resource, p);
-<<<<<<< HEAD
 
     // First deal with any previous covers by removing 
     // related metadata and manifest properties
@@ -829,7 +828,6 @@ void OPFResource::SetResourceAsCoverImage(ImageResource *image_resource)
     AddCoverMetaForImage(image_resource, p);
     if (p.m_package.m_version.startsWith("3")) {
         AddCoverImageProperty(resource_id, p);
->>>>>>> [update] initial commit
     }
     UpdateText(p);
 }

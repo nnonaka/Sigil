@@ -206,7 +206,6 @@ void BookViewPreview::UpdateDisplay()
     }
 }
 
-<<<<<<< HEAD
 void BookViewPreview::mouseReleaseEvent(QMouseEvent *event)
 {
     // Propagate to base class
@@ -215,7 +214,6 @@ void BookViewPreview::mouseReleaseEvent(QMouseEvent *event)
     emit GoToPreviewLocationRequest();
 }
 
->>>>>>> [update] initial commit
 void BookViewPreview::ScrollToTop()
 {
     QString caret_location = "var elementList = document.getElementsByTagName(\"body\");"
@@ -574,13 +572,11 @@ QString BookViewPreview::GetElementSelectingJS_NoTextNodes(const QList<ViewEdito
 QList<ViewEditor::ElementIndex> BookViewPreview::GetCaretLocation(bool normalize)
 {
     // The location element hierarchy encoded in a string
-<<<<<<< HEAD
     QString normalize_tree = "";
     if (normalize) {
         normalize_tree = "document.normalize();";
     }
     QString location_string = EvalJavascript(c_GetCaretLocation).toString();
->>>>>>> [update] initial commit
     return ConvertQWebPathToHierarchy(location_string);
 }
 
@@ -826,8 +822,6 @@ void BookViewPreview::ConnectSignalsToSlots()
     connect(this,  SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(OpenContextMenu(const QPoint &)));
     connect(m_InspectElement,    SIGNAL(triggered()),  this, SLOT(InspectElement()));
     connect(page(), SIGNAL(loadFinished(bool)), this, SLOT(UpdateFinishedState(bool)));
-<<<<<<< HEAD
     connect(page(), SIGNAL(linkClicked(const QUrl &)), this, SIGNAL(LinkClicked(const QUrl &)));
->>>>>>> [update] initial commit
     connect(page(), SIGNAL(loadFinished(bool)), this, SLOT(WebPageJavascriptOnLoad()));
 }

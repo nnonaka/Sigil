@@ -60,6 +60,7 @@ public:
 
     void UpdateDisplay();
 
+    void mouseReleaseEvent(QMouseEvent *event);
     /**
      * Scrolls the editor to the top.
      */
@@ -146,6 +147,7 @@ signals:
 
     void DocumentLoaded();
 
+    void GoToPreviewLocationRequest();
 
 protected:
     /**
