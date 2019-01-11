@@ -676,7 +676,7 @@ endif()
 
 # No need to explicity link Qt5::WinMain or to use the qt5_use_modules macro since CMAKE 2.8.11. We require CMAKE 3.0.0
 target_link_libraries( ${PROJECT_NAME} ${HUNSPELL_LIBRARIES} ${PCRE_LIBRARIES} ${GUMBO_LIBRARIES} ${MINIZIP_LIBRARIES} ${PYTHON_LIBRARIES}
-    Qt5::Widgets  Qt5::Xml  Qt5::XmlPatterns  Qt5::PrintSupport  Qt5::Svg  Qt5::WebKit  Qt5::WebKitWidgets  Qt5::Network  Qt5::Concurrent )
+    Qt5::Widgets  Qt5::Xml  Qt5::XmlPatterns  Qt5::PrintSupport  Qt5::Svg  Qt5::WebEngine  Qt5::WebEngineWidgets  Qt5::Network  Qt5::Concurrent )
 
 #############################################################################
 
