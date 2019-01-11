@@ -28,7 +28,7 @@
 #include "Tabs/ContentTab.h"
 
 class ImageResource;
-class QWebView;
+class QWebEngineView;
 class QAction;
 class QMenu;
 
@@ -93,7 +93,7 @@ private:
     // PRIVATE MEMBER VARIABLES
     ///////////////////////////////
 
-    QWebView *m_WebView;
+    QWebEngineView *m_WebView;
 
     QMenu *m_ContextMenu;
     QMenu *m_OpenWithContextMenu;

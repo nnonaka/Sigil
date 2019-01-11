@@ -27,8 +27,7 @@
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QXmlStreamReader>
-#include <QtWebKitWidgets/QWebFrame>
-#include <QtWebKitWidgets/QWebPage>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 #include <QtXml/QXmlInputSource>
 #include <QtXml/QXmlSimpleReader>
 #include <QRegularExpression>
@@ -290,9 +289,11 @@ bool XhtmlDoc::IsDataWellFormed(const QString &data, QString version)
 //   Hello Qt this is great
 QString XhtmlDoc::GetTextInHtml(const QString &source)
 {
-    QWebPage page;
-    page.mainFrame()->setHtml(source);
-    return page.mainFrame()->toPlainText();
+    QWebEnginePage page;
+    QString str;
+    page.setHtml(source);
+    page.toPlainText([&](const QString &result) {str = result;});
+    return str;
 }
 
 
@@ -311,24 +312,24 @@ QString XhtmlDoc::ResolveHTMLEntities(const QString &text)
 
 // A tree node class without a children() function...
 // appallingly stupid, isn't it?
-QList<QWebElement> XhtmlDoc::QWebElementChildren(const QWebElement &element)
-{
-    QList<QWebElement> children;
-    const QWebElement &first_child = element.firstChild();
-
-    if (!first_child.isNull()) {
-        children.append(first_child);
-    }
-
-    QWebElement next_sibling = first_child.nextSibling();
-
-    while (!next_sibling.isNull()) {
-        children.append(next_sibling);
-        next_sibling = next_sibling.nextSibling();
-    }
-
-    return children;
-}
+//QList<QWebElement> XhtmlDoc::QWebElementChildren(const QWebElement &element)
+//{
+//    QList<QWebElement> children;
+//    const QWebElement &first_child = element.firstChild();
+//
+//    if (!first_child.isNull()) {
+//        children.append(first_child);
+//    }
+//
+//    QWebElement next_sibling = first_child.nextSibling();
+//
+//    while (!next_sibling.isNull()) {
+//        children.append(next_sibling);
+//        next_sibling = next_sibling.nextSibling();
+//    }
+//
+//    return children;
+//}
 
 
 QStringList XhtmlDoc::GetSGFSectionSplits(const QString &source,

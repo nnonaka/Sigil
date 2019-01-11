@@ -29,7 +29,7 @@
 class BookViewPreview;
 class QSplitter;
 class QStackedWidget;
-class QWebInspector;
+//class QWebInspector;
 class QVBoxLayout;
 
 class PreviewWindow : public QDockWidget
@@ -75,7 +75,7 @@ private:
     QVBoxLayout *m_Layout;
 
     BookViewPreview *m_Preview;
-    QWebInspector *m_Inspector;
+//    QWebInspector *m_Inspector;
     QSplitter *m_Splitter;
     QStackedWidget *m_StackedViews;
     QString m_Filepath;

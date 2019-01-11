@@ -26,7 +26,7 @@
 
 #include <memory>
 
-#include <QtWebKit/QWebElement>
+#include <QtWebEngine/QtWebEngine>
 #include "Misc/GumboInterface.h"
 #include "ViewEditors/ViewEditor.h"
 
@@ -104,7 +104,7 @@ public:
     //    Bonnie & Clyde
     static QString ResolveHTMLEntities(const QString &text);
 
-    static QList<QWebElement> QWebElementChildren(const QWebElement &element);
+//    static QList<QWebElement> QWebElementChildren(const QWebElement &element);
 
     /**
      * Splits the provided source on SGF section breaks.

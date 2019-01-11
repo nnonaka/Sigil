@@ -35,11 +35,10 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QProgressDialog>
 #include <QtWidgets/QToolBar>
-#include <QtWebKit/QWebSettings>
+#include <QtWebEngine>
+#include <QtWebEngineWidgets>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
-#include <QWebView>
-#include <QWebPage>
 #include <QString>
 #include <QStringList>
 #include <QFont>
@@ -1091,13 +1090,13 @@ void MainWindow::clearMemoryCaches()
     // that does not invalidate the fontCache
 
     // toggle memory caches to disable and then re-enable
-    QWebSettings::setObjectCacheCapacities(0,0,0);
-    QWebSettings::setObjectCacheCapacities(0, 0, 100 * 1024 * 1024);
+    //QWebEngineSettings::setObjectCacheCapacities(0,0,0);
+    //QWebEngineSettings::setObjectCacheCapacities(0, 0, 100 * 1024 * 1024);
 
     // do the same to flush the page cache
-    int numpages = QWebSettings::maximumPagesInCache();
-    QWebSettings::setMaximumPagesInCache(0);
-    QWebSettings::setMaximumPagesInCache(numpages);
+    //int numpages = QWebEngineSettings::maximumPagesInCache();
+    //QWebEngineSettings::setMaximumPagesInCache(0);
+    //QWebEngineSettings::setMaximumPagesInCache(numpages);
 }
 
 
@@ -3625,16 +3624,18 @@ void MainWindow::ReadSettings()
     m_ClipboardHistoryLimit = settings.clipboardHistoryLimit();
     // Our default fonts for book view/web preview
     SettingsStore::BookViewAppearance bookViewAppearance = settings.bookViewAppearance();
-    QWebSettings *web_settings = QWebSettings::globalSettings();
-    web_settings->setFontSize(QWebSettings::DefaultFontSize, bookViewAppearance.font_size);
-    web_settings->setFontFamily(QWebSettings::StandardFont, bookViewAppearance.font_family_standard);
-    web_settings->setFontFamily(QWebSettings::SerifFont, bookViewAppearance.font_family_serif);
-    web_settings->setFontFamily(QWebSettings::SansSerifFont, bookViewAppearance.font_family_sans_serif);
+<<<<<<< HEAD
+    QWebEngineSettings *web_settings = QWebEngineSettings::globalSettings();
+    web_settings->setFontSize(QWebEngineSettings::DefaultFontSize, bookViewAppearance.font_size);
+    web_settings->setFontFamily(QWebEngineSettings::StandardFont, bookViewAppearance.font_family_standard);
+    web_settings->setFontFamily(QWebEngineSettings::SerifFont, bookViewAppearance.font_family_serif);
+    web_settings->setFontFamily(QWebEngineSettings::SansSerifFont, bookViewAppearance.font_family_sans_serif);
     // Check for existing custom Preview/Book View stylesheet in Prefs dir and load it if present
     QFileInfo CustomPreviewStylesheetInfo(QDir(Utility::DefinePrefsDir()).filePath(CUSTOM_PREVIEW_STYLE_FILENAME));
     if (CustomPreviewStylesheetInfo.exists() && CustomPreviewStylesheetInfo.isFile() && CustomPreviewStylesheetInfo.isReadable()) {
         web_settings->setUserStyleSheetUrl(QUrl::fromLocalFile(CustomPreviewStylesheetInfo.absoluteFilePath()));
     }
+>>>>>>> [update] initial commit
 }
 
 

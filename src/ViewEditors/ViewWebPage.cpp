@@ -28,7 +28,7 @@
 #include "ViewEditors/ViewWebPage.h"
 
 ViewWebPage::ViewWebPage(QObject *parent)
-    : QWebPage(parent)
+    : QWebEnginePage(parent)
 {
 }
 

@@ -302,7 +302,7 @@ bool FlowTab::IsModified()
     }
 
     if (!is_modified && m_wBookView) {
-        is_modified = is_modified || m_wBookView->isModified();
+        is_modified = is_modified || m_wBookView->IsModified();
     }
 
     return is_modified;
@@ -310,7 +310,7 @@ bool FlowTab::IsModified()
 
 void FlowTab::BookView()
 {
-    if (!IsDataWellFormed()) {
+    if (!IsDataWellFormed()) { 
         return;
     }
 
@@ -530,7 +530,8 @@ void FlowTab::RefreshSpellingHighlighting()
 bool FlowTab::CutEnabled()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        return m_wBookView->pageAction(QWebPage::Cut)->isEnabled();
+//        return m_wBookView->pageAction(BookViewEditor::Cut)->isEnabled();
+        return m_wBookView->hasSelection();
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         return m_wCodeView->textCursor().hasSelection();
     }
@@ -541,7 +542,8 @@ bool FlowTab::CutEnabled()
 bool FlowTab::CopyEnabled()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        return m_wBookView->pageAction(QWebPage::Copy)->isEnabled();
+//        return m_wBookView->pageAction(BookViewEditor::Copy)->isEnabled();
+        return m_wBookView->hasSelection();
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         return m_wCodeView->textCursor().hasSelection();
     }
@@ -552,7 +554,8 @@ bool FlowTab::CopyEnabled()
 bool FlowTab::PasteEnabled()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        return m_wBookView->pageAction(QWebPage::Paste)->isEnabled();
+//        return m_wBookView->pageAction(BookViewEditor::Paste)->isEnabled();
+        return m_wBookView->canPaste();
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         return m_wCodeView->canPaste();
     }
@@ -572,7 +575,8 @@ bool FlowTab::DeleteLineEnabled()
 bool FlowTab::RemoveFormattingEnabled()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        return m_wBookView->pageAction(QWebPage::RemoveFormat)->isEnabled();
+//        return m_wBookView->pageAction(BookViewEditor::RemoveFormat)->isEnabled();
+        return m_wBookView->IsCutCodeTagsAllowed();
     }
 
     if (m_ViewState == MainWindow::ViewState_CodeView) {
@@ -916,7 +920,8 @@ void FlowTab::Redo()
 void FlowTab::Cut()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::Cut);
+//        m_wBookView->page()->triggerAction(BookViewEditor::Cut);
+        m_wBookView->cut();
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->cut();
     }
@@ -925,7 +930,8 @@ void FlowTab::Cut()
 void FlowTab::Copy()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::Copy);
+  //      m_wBookView->page()->triggerAction(BookViewEditor::Copy);
+        m_wBookView->copy();
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->copy();
     }
@@ -1172,7 +1178,7 @@ void FlowTab::Print()
 void FlowTab::Bold()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::ToggleBold);
+        m_wBookView->ToggleFormatSelection("b", "font-weight", "bold");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->ToggleFormatSelection("b", "font-weight", "bold");
     }
@@ -1181,7 +1187,7 @@ void FlowTab::Bold()
 void FlowTab::Italic()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::ToggleItalic);
+        m_wBookView->ToggleFormatSelection("i", "font-style", "italic");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->ToggleFormatSelection("i", "font-style", "italic");
     }
@@ -1190,7 +1196,7 @@ void FlowTab::Italic()
 void FlowTab::Underline()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::ToggleUnderline);
+        m_wBookView->ToggleFormatSelection("u", "text-decoration", "underline");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->ToggleFormatSelection("u", "text-decoration", "underline");
     }
@@ -1209,7 +1215,7 @@ void FlowTab::Strikethrough()
 void FlowTab::Subscript()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::ToggleSubscript);
+        m_wBookView->ToggleFormatSelection("sub");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->ToggleFormatSelection("sub");
     }
@@ -1218,7 +1224,7 @@ void FlowTab::Subscript()
 void FlowTab::Superscript()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::ToggleSuperscript);
+        m_wBookView->ToggleFormatSelection("sup");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->ToggleFormatSelection("sup");
     }
@@ -1277,14 +1283,16 @@ void FlowTab::InsertNumberedList()
 void FlowTab::DecreaseIndent()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::Outdent);
+//        m_wBookView->page()->triggerAction(BookViewEditor::Outdent);
+        m_wBookView->Outdent();
     }
 }
 
 void FlowTab::IncreaseIndent()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::Indent);
+//        m_wBookView->page()->triggerAction(BookViewEditor::Indent);
+        m_wBookView->Indent();
     }
 }
 
@@ -1292,7 +1300,7 @@ void FlowTab::TextDirectionLeftToRight()
 {
     QString version = m_HTMLResource->GetEpubVersion();
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::SetTextDirectionLeftToRight);
+        m_wBookView->FormatStyle("direction", "ltr");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         if (version.startsWith("3")) {
             m_wCodeView->FormatTextDir("ltr"); 
@@ -1306,7 +1314,7 @@ void FlowTab::TextDirectionRightToLeft()
 {
     QString version = m_HTMLResource->GetEpubVersion();
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::SetTextDirectionRightToLeft);
+        m_wBookView->FormatStyle("direction", "rtl");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         if (version.startsWith("3")) {
             m_wCodeView->FormatTextDir("rtl"); 
@@ -1320,7 +1328,7 @@ void FlowTab::TextDirectionDefault()
 {
     QString version = m_HTMLResource->GetEpubVersion();
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::SetTextDirectionDefault);
+        m_wBookView->FormatStyle("direction", "inherit");
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         if (version.startsWith("3")) {
             m_wCodeView->FormatTextDir(QString()); 
@@ -1340,7 +1348,8 @@ void FlowTab::ShowTag()
 void FlowTab::RemoveFormatting()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        m_wBookView->page()->triggerAction(QWebPage::RemoveFormat);
+//        m_wBookView->page()->triggerAction(BookViewEditor::RemoveFormat);
+        m_wBookView->CutCodeTags();
     } else if (m_ViewState == MainWindow::ViewState_CodeView) {
         m_wCodeView->CutCodeTags();
     }
@@ -1402,7 +1411,8 @@ void FlowTab::IgnoreMisspelledWord()
 bool FlowTab::BoldChecked()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        return m_wBookView->pageAction(QWebPage::ToggleBold)->isChecked();
+//        return m_wBookView->pageAction(BookViewEditor::ToggleBold)->isChecked();
+        return m_wBookView->QueryCommandState("Bold");
     } else {
         return ContentTab::BoldChecked();
     }
@@ -1411,7 +1421,8 @@ bool FlowTab::BoldChecked()
 bool FlowTab::ItalicChecked()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        return m_wBookView->pageAction(QWebPage::ToggleItalic)->isChecked();
+//        return m_wBookView->pageAction(BookViewEditor::ToggleItalic)->isChecked();
+        return m_wBookView->QueryCommandState("leItalic");
     } else {
         return ContentTab::ItalicChecked();
     }
@@ -1420,7 +1431,8 @@ bool FlowTab::ItalicChecked()
 bool FlowTab::UnderlineChecked()
 {
     if (m_ViewState == MainWindow::ViewState_BookView) {
-        return m_wBookView->pageAction(QWebPage::ToggleUnderline)->isChecked();
+//        return m_wBookView->pageAction(BookViewEditor::ToggleUnderline)->isChecked();
+        return m_wBookView->QueryCommandState("Underline");
     } else {
         return ContentTab::UnderlineChecked();
     }
@@ -1572,7 +1584,7 @@ void FlowTab::ConnectBookViewSignalsToSlots()
     connect(m_wBookView, SIGNAL(selectionChanged()), this, SIGNAL(SelectionChanged()));
     connect(m_wBookView, SIGNAL(FocusLost(QWidget *)), this, SLOT(LeaveEditor(QWidget *)));
     connect(m_wBookView, SIGNAL(InsertFile()), this, SIGNAL(InsertFileRequest()));
-    connect(m_wBookView, SIGNAL(LinkClicked(const QUrl &)), this, SIGNAL(LinkClicked(const QUrl &)));
+    //connect(m_wBookView, SIGNAL(LinkClicked(const QUrl &)), this, SIGNAL(LinkClicked(const QUrl &)));
     connect(m_wBookView, SIGNAL(ClipboardSaveRequest()),    this, SIGNAL(ClipboardSaveRequest()));
     connect(m_wBookView, SIGNAL(ClipboardRestoreRequest()), this, SIGNAL(ClipboardRestoreRequest()));
     connect(m_wBookView, SIGNAL(InsertedFileOpenedExternally(const QString &)), this, SIGNAL(InsertedFileOpenedExternally(const QString &)));
@@ -1580,7 +1592,7 @@ void FlowTab::ConnectBookViewSignalsToSlots()
     connect(m_wBookView, SIGNAL(ShowStatusMessageRequest(const QString &)), this, SIGNAL(ShowStatusMessageRequest(const QString &)));
     connect(m_wBookView, SIGNAL(OpenClipEditorRequest(ClipEditorModel::clipEntry *)), this, SIGNAL(OpenClipEditorRequest(ClipEditorModel::clipEntry *)));
     connect(m_wBookView, SIGNAL(OpenIndexEditorRequest(IndexEditorModel::indexEntry *)), this, SIGNAL(OpenIndexEditorRequest(IndexEditorModel::indexEntry *)));
-    connect(m_wBookView, SIGNAL(textChanged()), this, SLOT(EmitContentChanged()));
+    //connect(m_wBookView, SIGNAL(textChanged()), this, SLOT(EmitContentChanged()));
     connect(m_wBookView, SIGNAL(BVInspectElement()), this, SIGNAL(InspectElement()));
     connect(m_wBookView, SIGNAL(PageUpdated()), this, SLOT(EmitUpdatePreview()));
     connect(m_wBookView, SIGNAL(PageClicked()), this, SLOT(EmitUpdatePreviewImmediately()));

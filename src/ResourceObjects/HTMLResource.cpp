@@ -24,8 +24,7 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QString>
-#include <QtWebKitWidgets/QWebFrame>
-#include <QtWebKitWidgets/QWebPage>
+#include <QtWebEngineWidgets>
 // #include <QDebug>
 
 #include "BookManipulation/CleanSource.h"

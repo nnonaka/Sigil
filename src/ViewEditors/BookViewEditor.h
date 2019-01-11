@@ -24,7 +24,7 @@
 #define BOOKVIEWEDITOR_H
 
 #include <QtCore/QVariant>
-#include <QtWebKit/QWebElement>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 
 #include "Misc/PasteTarget.h"
 #include "Misc/Utility.h"
@@ -220,9 +220,42 @@ public slots:
 
     void EmitInspectElement();
 
+    void print(QPrinter*);
+
     // Implementations for PasteTarget.h
     void PasteText(const QString &text);
     bool PasteClipEntries(const QList<ClipEditorModel::clipEntry *> &clips);
+
+    bool canPaste();
+
+    /**
+     * Given the current cursor position/selection, look to toggle a format style tag
+     * around it. The rule on whether to insert a new tag or remove an existing one is
+     * attempting to emulate what would happen in BookView. If there is the same tag
+     * immediately adjacent to the selection (inside or outside it) then it is removed.
+     * Otherwise a new tag is inserted around the selection.
+     *
+     * @param element_name The name of the element to toggle the format of the selection.
+     * @param property_name If caret is in an inline CSS style instead of the body, property to change
+     * @param property_value If caret is in an inline CSS style instead of the body, value of property to change
+     */
+    void ToggleFormatSelection(const QString &element_name, const QString property_name = "", const QString property_value = "");
+
+    /**
+     * Based on the cursor location (in html file) add/replace as
+     * appropriate a style="property_name: property_value" attribute.
+     *
+     * @param property_name The name of the style property to be inserted/replaced.
+     * @param property_value The new value to be assigned to this property.
+     */
+    void FormatStyle(const QString &property_name, const QString &property_value);
+
+    void CutCodeTags();
+    bool IsCutCodeTagsAllowed();
+
+    void Outdent();
+    void Indent();
+
 
 signals:
     void PageUpdated();
@@ -234,7 +267,7 @@ signals:
      * The contentsChanged QWebPage signal is wired to this one,
      * and contentsChangedExtra is wired to contentsChanged.
      */
-    void textChanged();
+    //void textChanged();
 
     /**
      * Extends the QWebPage contentsChanged signal.
@@ -247,7 +280,7 @@ signals:
      * the Book View textChanged signal to be aware of these changes.
      * Thus, the wired extension.
      */
-    void contentsChangedExtra();
+    //void contentsChangedExtra();
 
     /**
      * Emitted when the focus is lost.
@@ -285,6 +318,8 @@ protected:
     void keyReleaseEvent(QKeyEvent *event);
     void keyPressEvent(QKeyEvent *event);
 
+    void contextMenuEvent(QContextMenuEvent *event) override;
+
 private slots:
 
     void EmitPageUpdated();
@@ -292,24 +327,24 @@ private slots:
     /**
      * Wrapper slot for the Page Up shortcut.
      */
-    void PageUp();
+    //void PageUp();
 
     /**
      * Wrapper slot for the Page Down shortcut.
      */
-    void PageDown();
+    //void PageDown();
 
     void ClickAtTopLeft();
 
     /**
      * Wrapper slot for the Scroll One Line Up shortcut.
      */
-    void ScrollOneLineUp();
+    //void ScrollOneLineUp();
 
     /**
      * Wrapper slot for the Scroll One Line Down shortcut.
      */
-    void ScrollOneLineDown();
+    //void ScrollOneLineDown();
 
     /**
      * Sets the web page modified state.
@@ -323,7 +358,7 @@ private slots:
      *
      * @param point The point at which the menu should be opened.
      */
-    void OpenContextMenu(const QPoint &point);
+    //void OpenContextMenu(const QPoint &point);
 
     void PasteClipEntryFromName(const QString &name);
 
@@ -348,7 +383,7 @@ private:
      *
      * @param down Specifies are we scrolling up or down.
      */
-    void ScrollByLine(bool down);
+    //void ScrollByLine(bool down);
 
     /**
      * Scrolls the whole screen a number of pixels.
@@ -356,14 +391,14 @@ private:
      * @param pixel_number The number of pixels to scroll
      * @param down Specifies are we scrolling up or down.
      */
-    void ScrollByNumPixels(int pixel_number, bool down);
+    //void ScrollByNumPixels(int pixel_number, bool down);
 
     /**
      * Removes all the cruft with which WebKit litters our source code.
      * The cruft is removed from the QWebPage cache, and includes
      * superfluous CSS styles and classes.
      */
-    void RemoveWebkitCruft();
+    //void RemoveWebkitCruft();
 
     /**
      * Removes the spans created by the replace mechanism in Book View.
@@ -389,7 +424,7 @@ private:
      * @param point The point at which the menu should be opened.
      * @return \c true if the menu could be set up.
      */
-    bool SuccessfullySetupContextMenu(const QPoint &point);
+    //bool SuccessfullySetupContextMenu(const QPoint &point);
 
     /**
      * Connects all the required signals to their respective slots.
@@ -442,6 +477,9 @@ private:
     QAction *m_SaveAs;
     QAction *m_InspectElement;
 
+    // WF-TODO
+    QAction *m_ToggleBold;
+
     /**
      * Paste keyboard shortcuts - CTRL+V (Command-V - MacOS) and SHIFT-Insert (Old - Windows).
      */
@@ -451,22 +489,22 @@ private:
     /**
      * PageUp keyboard shortcut.
      */
-    QShortcut *m_PageUp;
+    //QShortcut *m_PageUp;
 
     /**
      * PageDown keyboard shortcut.
      */
-    QShortcut *m_PageDown;
+    //QShortcut *m_PageDown;
 
     /**
      * Keyboard shortcut for scrolling one line up.
      */
-    QShortcut *m_ScrollOneLineUp;
+    //QShortcut *m_ScrollOneLineUp;
 
     /**
      * Keyboard shortcut for scrolling one line down.
      */
-    QShortcut *m_ScrollOneLineDown;
+    //QShortcut *m_ScrollOneLineDown;
 
     /**
      * The JavaScript source code that returns the XHTML source

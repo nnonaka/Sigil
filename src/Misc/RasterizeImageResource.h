@@ -25,7 +25,7 @@
 
 #include <QtCore/QObject>
 
-class QWebPage;
+class QWebEnginePage;
 class QPixmap;
 class ImageResource;
 
@@ -47,7 +47,7 @@ private slots:
 
 private:
 
-    QWebPage *m_WebPage;
+    QWebEnginePage *m_WebPage;
 
     bool m_LoadFinishedFlag;
 

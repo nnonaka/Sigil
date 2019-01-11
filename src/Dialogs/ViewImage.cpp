@@ -21,8 +21,7 @@
 
 #include <QtCore/QFileInfo>
 #include <QtWidgets/QLayout>
-#include <QWebView>
-#include <QWebFrame>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 
 #include "MainUI/MainWindow.h"
 #include "Dialogs/ViewImage.h"
@@ -39,8 +38,9 @@ ViewImage::ViewImage(QWidget *parent)
     ui.webView->setContextMenuPolicy(Qt::NoContextMenu);
     ui.webView->setFocusPolicy(Qt::NoFocus);
     ui.webView->setAcceptDrops(false);
-    ui.webView->page()->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
-    ui.webView->page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+//    ui.webView->page()->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+//    ui.webView->page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+    ui.webView->page()->runJavaScript("document.body.style.overflow='hidden;;");
 
     ReadSettings();
 }

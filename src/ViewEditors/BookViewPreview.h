@@ -25,13 +25,13 @@
 
 #include <memory>
 #include <QtCore/QMap>
-#include <QtWebKitWidgets/QWebView>
+#include <QtWebEngineWidgets>
 #include "ViewEditors/ViewEditor.h"
 
 class QSize;
 class ViewWebPage;
 
-class BookViewPreview : public QWebView, public ViewEditor
+class BookViewPreview : public QWebEngineView, public ViewEditor
 {
     Q_OBJECT
 
@@ -140,7 +140,7 @@ signals:
      */
     void ZoomFactorChanged(float new_zoom_factor);
 
-    void LinkClicked(const QUrl &url);
+    //void LinkClicked(const QUrl &url);
 
     void ShowStatusMessageRequest(const QString &message);
 
@@ -155,7 +155,11 @@ protected:
      * @param javascript The JavaScript source code to execute.
      * @return The result from the last executed javascript statement.
      */
-    QVariant EvaluateJavascript(const QString &javascript);
+    QVariant EvalJavascript(const QString &javascript);
+    void EvaluateJavascript(const QString &javascript);
+
+    QMutex js_mutex;
+    QWaitCondition js_wc;
 
     /**
      * Javascript source that implements a function to find the
@@ -222,7 +226,7 @@ private:
      *
      * @param node The node to covert.
      */
-    QWebElement QWebPathToQWebElement(const QString & webpath);
+//    QWebElement QWebPathToQWebElement(const QString & webpath);
 
     /**
      * Returns the local character offset of the selection.

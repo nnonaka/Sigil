@@ -29,7 +29,7 @@
 #include <QtGui/QClipboard>
 #include <QtWidgets/QLayout>
 #include <QtWidgets/QMenu>
-#include <QtWebKitWidgets/QWebView>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrintPreviewDialog>
@@ -60,7 +60,7 @@ const QString IMAGE_HTML_BASE =
 ImageTab::ImageTab(ImageResource *resource, QWidget *parent)
     :
     ContentTab(resource, parent),
-    m_WebView(new QWebView(this)),
+    m_WebView(new QWebEngineView(this)),
     m_ContextMenu(new QMenu(this)),
     m_OpenWithContextMenu(new QMenu(this))
 {
@@ -307,7 +307,8 @@ void ImageTab::Print()
     print_dialog.setWindowTitle(tr("Print %1").arg(GetFilename()));
 
     if (print_dialog.exec() == QDialog::Accepted) {
-        m_WebView->print(&printer);
+//        m_WebView->print(&printer);
+        m_WebView->page()->print(&printer, [this](bool result) {});
     }
 }
 

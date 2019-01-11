@@ -36,9 +36,8 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QShortcut>
 #include <QtGui/QTextDocument>
-#include <QtWebKit/QWebElement>
-#include <QtWebKit/QWebSettings>
-#include <QtWebKitWidgets/QWebFrame>
+//#include <QtWebEngine>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 
@@ -95,10 +94,10 @@ BookViewEditor::BookViewEditor(QWidget *parent)
     // m_Paste1(new QShortcut(QKeySequence(QKeySequence::Paste), this, NULL, NULL, Qt::WidgetShortcut)),
     // Old style windows paste.
     // m_Paste2(new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Insert), this, 0, 0, Qt::WidgetShortcut)),
-    m_PageUp(new QShortcut(QKeySequence(QKeySequence::MoveToPreviousPage), this, 0, 0, Qt::WidgetShortcut)),
-    m_PageDown(new QShortcut(QKeySequence(QKeySequence::MoveToNextPage), this, 0, 0, Qt::WidgetShortcut)),
-    m_ScrollOneLineUp(new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, 0, 0, Qt::WidgetShortcut)),
-    m_ScrollOneLineDown(new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, 0, 0, Qt::WidgetShortcut)),
+    //m_PageUp(new QShortcut(QKeySequence(QKeySequence::MoveToPreviousPage), this, 0, 0, Qt::WidgetShortcut)),
+    //m_PageDown(new QShortcut(QKeySequence(QKeySequence::MoveToNextPage), this, 0, 0, Qt::WidgetShortcut)),
+    //m_ScrollOneLineUp(new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, 0, 0, Qt::WidgetShortcut)),
+    //m_ScrollOneLineDown(new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, 0, 0, Qt::WidgetShortcut)),
     c_GetSegmentHTML(Utility::ReadUnicodeTextFile(":/javascript/get_segment_html.js")),
     c_FormatBlock(Utility::ReadUnicodeTextFile(":/javascript/format_block.js")),
     c_GetAncestor(Utility::ReadUnicodeTextFile(":/javascript/get_ancestor.js")),
@@ -106,12 +105,12 @@ BookViewEditor::BookViewEditor(QWidget *parent)
     c_SetAncestorAttribute(Utility::ReadUnicodeTextFile(":/javascript/set_ancestor_attribute.js"))
 {
     setContextMenuPolicy(Qt::CustomContextMenu);
-    page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, false);
-    page()->settings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, true);
+//    page()->settings()->setAttribute(QWebEngineSettings::DeveloperExtrasEnabled, false);
+    page()->settings()->setAttribute(QWebEngineSettings::JavascriptCanAccessClipboard, true);
     SettingsStore settings;
     // Allow epubs to access remote resources via the net        
-    page()->settings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, (settings.remoteOn() == 1));
-    page()->settings()->setAttribute(QWebSettings::ZoomTextOnly, true);
+    page()->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, (settings.remoteOn() == 1));
+//    page()->settings()->setAttribute(QWebEngineSettings::ZoomTextOnly, true);
     SetCurrentZoomFactor(settings.zoomWeb());
     installEventFilter(this);
     CreateContextMenuActions();
@@ -124,10 +123,10 @@ BookViewEditor::~BookViewEditor()
     m_OpenWithContextMenu->deleteLater();
     // m_Paste1->deleteLater();
     // m_Paste2->deleteLater();
-    m_PageUp->deleteLater();
-    m_PageDown->deleteLater();
-    m_ScrollOneLineUp->deleteLater();
-    m_ScrollOneLineDown->deleteLater();
+    //m_PageUp->deleteLater();
+    //m_PageDown->deleteLater();
+    //m_ScrollOneLineUp->deleteLater();
+    //m_ScrollOneLineDown->deleteLater();
 
     if (m_Undo) {
         delete m_Undo;
@@ -196,7 +195,8 @@ void BookViewEditor::CustomSetDocument(const QString &path, const QString &html)
     m_isLoadFinished = false;
     m_path = path;
     BookViewPreview::CustomSetDocument(m_path, html);
-    page()->setContentEditable(true);
+//    page()->setContentEditable(true);
+    EvaluateJavascript("document.documentElement.contentEditable = true");
     SetWebPageModified(false);
     // Formatting buttons in Book View will generate styled spans. Ensures spec compliance.
     ExecCommand("styleWithCSS", "true");
@@ -205,10 +205,14 @@ void BookViewEditor::CustomSetDocument(const QString &path, const QString &html)
 
 QString BookViewEditor::GetHtml()
 {
-    RemoveWebkitCruft();
+    // WE-TODO RemoveWebkitCruft();
     // Set the xml tag here rather than let Tidy do it.
     // This prevents false mismatches with the cache later on.
-    QString html_from_Qt = page()->mainFrame()->toHtml();
+    qDebug() << "BookViewEditor::GetHtml";
+    QString *r = new QString;
+    page()->toHtml([&](const QString &result){qDebug() << result; *r = result;});
+    QString html_from_Qt = *r;
+    qDebug() << "html_from_Qt: " + html_from_Qt;
     html_from_Qt = RemoveBookViewReplaceSpans(html_from_Qt);
     // Convert nbsp to entity because it cannot be seen and there are issues
     // where CV will remove them if they are a single character.
@@ -254,7 +258,10 @@ void BookViewEditor::SetZoomFactor(float factor)
 
 QString BookViewEditor::SplitSection()
 {
-    QString html = page()->mainFrame()->toHtml();
+    qDebug() << "BookViewEditor::SplitSection";
+    QString *r;
+    page()->toHtml([&](const QString &result){*r = result;});
+    QString html = *r;
     QString doctype = "";
     QRegularExpression doctype_search(DOCTYPE_TAG, QRegularExpression::CaseInsensitiveOption);
     QRegularExpressionMatch doctype_mo = doctype_search.match(html);
@@ -267,10 +274,12 @@ QString BookViewEditor::SplitSection()
     } else {
         newprefix = DOC_PREFIX;
     }
-    QString head     = page()->mainFrame()->documentElement().findFirst("head").toOuterXml();
-    QString body_tag = EvaluateJavascript(GET_BODY_TAG_HTML).toString();
-    QString segment  = EvaluateJavascript(c_GetBlock % c_GetSegmentHTML).toString();
-    emit contentsChangedExtra();
+//    QString head     = page()->documentElement().findFirst("head").toOuterXml();
+    QString head;
+    page()->runJavaScript("qt.jQuery('head')", [&](const QVariant &result) {head = result.toString();});
+    QString body_tag = EvalJavascript(GET_BODY_TAG_HTML).toString();
+    QString segment  = EvalJavascript(c_GetBlock % c_GetSegmentHTML).toString();
+    //emit contentsChangedExtra();
     // The <body> tag returned from above will have a closing </body>
     // element. With Tidy turned on, the old code got away with this, but
     // with Tidy turned off it goes horribly wrong. We also want to remove
@@ -299,30 +308,31 @@ void BookViewEditor::ResetModified()
 
 void BookViewEditor::Undo()
 {
-    page()->triggerAction(QWebPage::Undo);
+    page()->triggerAction(QWebEnginePage::Undo);
 }
 
 void BookViewEditor::Redo()
 {
-    page()->triggerAction(QWebPage::Redo);
+    page()->triggerAction(QWebEnginePage::Redo);
 }
 
 // Overridden so we can emit the FocusLost() signal.
 void BookViewEditor::focusOutEvent(QFocusEvent *event)
 {
     emit FocusLost(this);
-    QWebView::focusOutEvent(event);
+    QWebEngineView::focusOutEvent(event);
 }
 
 void BookViewEditor::EmitPageUpdated()
-{
+{ 
     emit PageUpdated();
 }
 
 QString BookViewEditor::GetSelectedText()
 {
-    QString javascript = "window.getSelection().toString();";
-    return EvaluateJavascript(javascript).toString();
+    //QString javascript = "window.getSelection().toString();";
+    //return EvaluateJavascript(javascript).toString();
+    return page()->selectedText();
 }
 
 void BookViewEditor::SetUpFindForSelectedText(const QString &search_regex)
@@ -332,14 +342,14 @@ void BookViewEditor::SetUpFindForSelectedText(const QString &search_regex)
 
 void BookViewEditor::TextChangedFilter()
 {
-    emit textChanged();
+    //emit textChanged();
 }
 
 bool BookViewEditor::ExecCommand(const QString &command)
 {
     if (m_isLoadFinished) {
         QString javascript = QString("document.execCommand( '%1', false, null)").arg(EscapeJSString(command));
-        return EvaluateJavascript(javascript).toBool();
+        return EvalJavascript(javascript).toBool();
     }
 
     return false;
@@ -350,13 +360,13 @@ bool BookViewEditor::ExecCommand(const QString &command, const QString &paramete
     QString javascript = QString("document.execCommand( '%1', false, '%2' )")
                          .arg(EscapeJSString(command))
                          .arg(EscapeJSString(parameter));
-    return EvaluateJavascript(javascript).toBool();
+    return EvalJavascript(javascript).toBool();
 }
 
 bool BookViewEditor::QueryCommandState(const QString &command)
 {
     QString javascript = QString("document.queryCommandState( '%1', false, null)").arg(EscapeJSString(command));
-    return EvaluateJavascript(javascript).toBool();
+    return EvalJavascript(javascript).toBool();
 }
 
 QString BookViewEditor::EscapeJSString(const QString &string)
@@ -368,6 +378,7 @@ QString BookViewEditor::EscapeJSString(const QString &string)
     return new_string.replace("\\", "\\\\").replace("\"", "\\\"").replace("'", "\\'");
 }
 
+/*
 void BookViewEditor::ScrollByLine(bool down)
 {
     // This is an educated guess at best since QWebView is not
@@ -379,14 +390,16 @@ void BookViewEditor::ScrollByLine(bool down)
 void BookViewEditor::ScrollByNumPixels(int pixel_number, bool down)
 {
     Q_ASSERT(pixel_number != 0);
-    int current_scroll_offset = page()->mainFrame()->scrollBarValue(Qt::Vertical);
-    int scroll_maximum        = page()->mainFrame()->scrollBarMaximum(Qt::Vertical);
+    int current_scroll_offset = page()->view()->scrollBarValue(Qt::Vertical);
+    int scroll_maximum        = page()->scrollBarMaximum(Qt::Vertical);
     int new_scroll_Y = down ? current_scroll_offset + pixel_number : current_scroll_offset - pixel_number;
     // qBound(min, ours, max) limits the value to the range
     new_scroll_Y     = qBound(0, new_scroll_Y, scroll_maximum);
-    page()->mainFrame()->setScrollBarValue(Qt::Vertical, new_scroll_Y);
+    page()->setScrollBarValue(Qt::Vertical, new_scroll_Y);
 }
+*/
 
+/*
 void BookViewEditor::PageUp()
 {
     // Scroll by a bit less than the full height to be sure the user does not miss anything.
@@ -399,6 +412,7 @@ void BookViewEditor::PageDown()
     ScrollByNumPixels(height() - 40, true);
     QTimer::singleShot(0, this, SLOT(ClickAtTopLeft()));
 }
+*/
 
 void BookViewEditor::ClickAtTopLeft()
 {
@@ -419,6 +433,7 @@ void BookViewEditor::ClickAtTopLeft()
     connect(page(), SIGNAL(linkClicked(const QUrl &)), this, SIGNAL(LinkClicked(const QUrl &)));
 }
 
+/*
 void BookViewEditor::ScrollOneLineUp()
 {
     ScrollByLine(false);
@@ -428,14 +443,16 @@ void BookViewEditor::ScrollOneLineDown()
 {
     ScrollByLine(true);
 }
+*/
 
+/*
 void BookViewEditor::RemoveWebkitCruft()
 {
-    QWebElementCollection collection = page()->mainFrame()->findAllElements(".Apple-style-span");
+    QWebElementCollection collection = page() ->findAllElements(".Apple-style-span");
     foreach(QWebElement element, collection) {
         element.toggleClass("Apple-style-span");
     }
-    collection = page()->mainFrame()->findAllElements(".webkit-indent-blockquote");
+    collection = page()->findAllElements(".webkit-indent-blockquote");
     foreach(QWebElement element, collection) {
         element.toggleClass("webkit-indent-blockquote");
     }
@@ -450,6 +467,7 @@ void BookViewEditor::RemoveWebkitCruft()
         body_tag.removeAttribute("style");
     }
 }
+*/
 
 QString BookViewEditor::RemoveBookViewReplaceSpans(const QString &source)
 {
@@ -508,7 +526,7 @@ void BookViewEditor::FormatBlock(const QString &element_name, bool preserve_attr
                           "startNode.parentNode.replaceChild( element, startNode );"
                           % SET_CURSOR_JS;
     EvaluateJavascript(javascript);
-    emit contentsChangedExtra();
+    //emit contentsChangedExtra();
 }
 
 
@@ -517,7 +535,7 @@ QString BookViewEditor::GetCaretElementName()
     QString javascript =  "var node = document.getSelection().anchorNode;"
                           "var startNode = get_block( node );"
                           "if (startNode != null) { startNode.nodeName; }";
-    return EvaluateJavascript(c_GetBlock % javascript).toString();
+    return EvalJavascript(c_GetBlock % javascript).toString();
 }
 
 void BookViewEditor::ApplyCaseChangeToSelection(const Utility::Casing &casing)
@@ -541,7 +559,7 @@ void BookViewEditor::ApplyCaseChangeToSelection(const Utility::Casing &casing)
                          "}"
                          "xml;";
 
-    QString selected_html  = EvaluateJavascript(javascript).toString();
+    QString selected_html  = EvalJavascript(javascript).toString();
 
     QString selected_text = GetSelectedText();
 
@@ -565,6 +583,7 @@ void BookViewEditor::ApplyCaseChangeToSelection(const Utility::Casing &casing)
     // dirty alternative, of putting the text on the clipboard and pasting it.
     // However since this will muck around the with clipboard history we need
     // to do a little extra work to disconnect and restore things afterwards.
+/*
     emit ClipboardSaveRequest();
     QApplication::clipboard()->setText(new_text);
     paste();
@@ -572,8 +591,9 @@ void BookViewEditor::ApplyCaseChangeToSelection(const Utility::Casing &casing)
 
     // We will have lost our selection from the paste operation.
     for (int i = 0; i < new_text.length(); i++) {
-        page()->triggerAction(QWebPage::SelectPreviousChar);
+        page()->triggerAction(QWebEnginePage::SelectPreviousChar);
     }
+*/
 }
 
 bool BookViewEditor::InsertId(const QString &id)
@@ -642,9 +662,11 @@ bool BookViewEditor::InsertTagAttribute(const QString &element_name, const QStri
     bool insert_ok = InsertHtml(html);
 
     // We will have lost our selection from the insert - viewable text hasn't changed
+/*
     for (int i = 0; i < selected_text.length(); i++) {
-        page()->triggerAction(QWebPage::SelectPreviousChar);
+        page()->triggerAction(QWebEnginePage::SelectPreviousChar);
     }
+*/
 
     return insert_ok;
 }
@@ -660,7 +682,7 @@ QString BookViewEditor::GetAncestorTagAttributeValue(const QString &attribute_na
                        "var attributeName = '" % attribute_name % "';"
                        "var startNode = document.getSelection().anchorNode;"
                        "get_ancestor_attribute(startNode, tagNames, attributeName);";
-    return EvaluateJavascript(js).toString();
+    return EvalJavascript(js).toString();
 }
 
 bool BookViewEditor::SetAncestorTagAttributeValue(const QString &attribute_name, const QString &attribute_value, const QStringList &tag_list)
@@ -675,10 +697,10 @@ bool BookViewEditor::SetAncestorTagAttributeValue(const QString &attribute_name,
                        "var attributeValue = '" % attribute_value % "';"
                        "var startNode = document.getSelection().anchorNode;"
                        "set_ancestor_attribute(startNode, tagNames, attributeName, attributeValue);";
-    bool applied = EvaluateJavascript(js).toBool();
+    bool applied = EvalJavascript(js).toBool();
 
     if (applied) {
-        emit contentsChangedExtra();
+        //emit contentsChangedExtra();
     }
 
     return applied;
@@ -687,7 +709,7 @@ bool BookViewEditor::SetAncestorTagAttributeValue(const QString &attribute_name,
 
 void BookViewEditor::cut()
 {
-    page()->triggerAction(QWebPage::Cut);
+    page()->triggerAction(QWebEnginePage::Cut);
 }
 
 
@@ -708,17 +730,17 @@ void BookViewEditor::paste()
         // show message box
         switch (msgBox.exec()) {
             case QMessageBox::Yes:
-                page()->triggerAction(QWebPage::PasteAndMatchStyle);
+                page()->triggerAction(QWebEnginePage::PasteAndMatchStyle);
                 break;
             case QMessageBox::No:
-                page()->triggerAction(QWebPage::Paste);
+                page()->triggerAction(QWebEnginePage::Paste);
                 break;
             default:
                 // Cancel was clicked - do nothing
                 break;
         }
     } else {
-        page()->triggerAction(QWebPage::Paste);
+        page()->triggerAction(QWebEnginePage::Paste);
     }
 }
 
@@ -736,7 +758,7 @@ void BookViewEditor::copyImage()
 
 void BookViewEditor::selectAll()
 {
-    page()->triggerAction(QWebPage::SelectAll);
+    page()->triggerAction(QWebEnginePage::SelectAll);
 }
 
 void BookViewEditor::openImage()
@@ -745,7 +767,7 @@ void BookViewEditor::openImage()
 
     if (data.isValid()) {
         const QUrl &url = data.toUrl();
-        emit LinkClicked(url);
+        //emit LinkClicked(url);
     }
 }
 
@@ -845,12 +867,62 @@ bool BookViewEditor::PasteClipEntry(ClipEditorModel::clipEntry *clip)
     return true;
 }
 
+bool BookViewEditor::canPaste()
+{
+// WE-TODO
+    return false;
+}
+
+void BookViewEditor::ToggleFormatSelection(const QString &element_name, const QString property_name, const QString property_value)
+{
+    if (element_name.isEmpty()) {
+        return;
+    }
+// WE-TODO
+}
+
+void BookViewEditor::FormatStyle(const QString &property_name, const QString &property_value)
+{
+    if (property_name.isEmpty() || property_value.isEmpty()) {
+        return;
+    }
+// WE-TODO
+}
+
+void BookViewEditor::CutCodeTags()
+{
+// WE-TODO
+}
+
+bool BookViewEditor::IsCutCodeTagsAllowed()
+{
+// WE-TODO
+    return false;
+}
+
+void BookViewEditor::print(QPrinter* printer)
+{
+// WE-TODO
+}
+
+void BookViewEditor::Indent()
+{
+// WE-TODO
+}
+
+void BookViewEditor::Outdent()
+{
+// WE-TODO
+}
+
+
 void BookViewEditor::EmitInspectElement()
 {
     StoreCurrentCaretLocation();
     emit BVInspectElement();
 }
 
+/*
 void BookViewEditor::OpenContextMenu(const QPoint &point)
 {
     if (!SuccessfullySetupContextMenu(point)) {
@@ -863,7 +935,7 @@ void BookViewEditor::OpenContextMenu(const QPoint &point)
 
 bool BookViewEditor::SuccessfullySetupContextMenu(const QPoint &point)
 {
-    const QWebFrame *frame = page()->frameAt(point);
+    const QWebEnginePage *frame = page()->frameAt(point);
     bool has_image = false;
 
     if (frame) {
@@ -952,7 +1024,17 @@ bool BookViewEditor::SuccessfullySetupContextMenu(const QPoint &point)
     m_CopyImage->setEnabled(has_image);
     return true;
 }
+*/
 
+void BookViewEditor::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu *menu = page()->createStandardContextMenu();
+
+    // WE-TODO
+    AddClipContextMenu(menu);
+
+    menu->popup(event->globalPos());
+}
 
 void BookViewEditor::AddClipContextMenu(QMenu *menu)
 {
@@ -1044,7 +1126,7 @@ void BookViewEditor::SaveClipAction()
 void BookViewEditor::mouseReleaseEvent(QMouseEvent *event)
 {
     // Propagate to base class
-    QWebView::mouseReleaseEvent(event);
+    QWebEngineView::mouseReleaseEvent(event);
     emit PageClicked();
 }
 
@@ -1087,20 +1169,22 @@ void BookViewEditor::CreateContextMenuActions()
     m_OpenWithContextMenu->addAction(m_OpenWithEditor);
     m_OpenWithContextMenu->addAction(m_OpenWith);
     m_InspectElement = new QAction(tr("Inspect Element") + "...", this);
+    // WE-TODO
+    m_ToggleBold = new QAction(tr("ToggleBold"),         this);
 }
 
 void BookViewEditor::ConnectSignalsToSlots()
 {
     // connect(m_Paste1,            SIGNAL(activated()), this, SLOT(paste()));
     // connect(m_Paste2,            SIGNAL(activated()), this, SLOT(paste()));
-    connect(m_PageUp,            SIGNAL(activated()), this, SLOT(PageUp()));
-    connect(m_PageDown,          SIGNAL(activated()), this, SLOT(PageDown()));
-    connect(m_ScrollOneLineUp,   SIGNAL(activated()), this, SLOT(ScrollOneLineUp()));
-    connect(m_ScrollOneLineDown, SIGNAL(activated()), this, SLOT(ScrollOneLineDown()));
-    connect(this,   SIGNAL(contentsChangedExtra()),  page(), SIGNAL(contentsChanged()));
-    connect(page(), SIGNAL(contentsChanged()),      this,   SIGNAL(textChanged()));
+//    connect(m_PageUp,            SIGNAL(activated()), this, SLOT(PageUp()));
+//    connect(m_PageDown,          SIGNAL(activated()), this, SLOT(PageDown()));
+//    connect(m_ScrollOneLineUp,   SIGNAL(activated()), this, SLOT(ScrollOneLineUp()));
+//    connect(m_ScrollOneLineDown, SIGNAL(activated()), this, SLOT(ScrollOneLineDown()));
+    //connect(this,   SIGNAL(contentsChangedExtra()),  page(), SIGNAL(contentsChanged()));
+    //connect(page(), SIGNAL(contentsChanged()),      this,   SIGNAL(textChanged()));
     connect(page(), SIGNAL(selectionChanged()),      this,   SIGNAL(selectionChanged()));
-    connect(page(), SIGNAL(contentsChanged()),      this,   SLOT(SetWebPageModified()));
+    //connect(page(), SIGNAL(contentsChanged()),      this,   SLOT(SetWebPageModified()));
     connect(m_InsertFile,     SIGNAL(triggered()),  this, SLOT(insertFile()));
     connect(m_Undo,           SIGNAL(triggered()),  this, SLOT(Undo()));
     connect(m_Redo,           SIGNAL(triggered()),  this, SLOT(Redo()));
@@ -1115,5 +1199,5 @@ void BookViewEditor::ConnectSignalsToSlots()
     connect(m_SaveAs,         SIGNAL(triggered()),  this, SLOT(saveAs()));
     connect(m_clipMapper, SIGNAL(mapped(const QString &)), this, SLOT(PasteClipEntryFromName(const QString &)));
     connect(m_InspectElement,      SIGNAL(triggered()),  this, SLOT(EmitInspectElement()));
-    connect(page(), SIGNAL(contentsChanged()), this, SLOT(EmitPageUpdated()));
+    //connect(page(), SIGNAL(contentsChanged()), this, SLOT(EmitPageUpdated()));
 }

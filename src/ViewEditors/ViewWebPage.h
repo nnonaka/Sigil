@@ -26,9 +26,9 @@
 #define VIEWWEBPAGE_H
 
 #include <QObject>
-#include <QWebPage>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 
-class ViewWebPage : public QWebPage
+class ViewWebPage : public QWebEnginePage
 {
     Q_OBJECT
 

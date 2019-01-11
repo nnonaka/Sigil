@@ -22,7 +22,8 @@
 #include <QtCore/QString>
 #include <QtCore/QUrl>
 #include <QtWidgets/QLayout>
-#include <QtWebKitWidgets/QWebView>
+//#include <QtWebKitWidgets/QWebView>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 #include "MainUI/MainWindow.h"
 #include "Tabs/AVTab.h"
 #include "sigil_constants.h"
@@ -53,7 +54,7 @@ const QString VIDEO_HTML_BASE =
 
 AVTab::AVTab(Resource *resource, QWidget *parent)
     : ContentTab(resource, parent),
-      m_WebView(new QWebView(this))
+      m_WebView(new QWebEngineView(this))
 {
     m_WebView->setContextMenuPolicy(Qt::NoContextMenu);
     m_WebView->setFocusPolicy(Qt::NoFocus);

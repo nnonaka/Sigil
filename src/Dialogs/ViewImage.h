@@ -29,7 +29,7 @@
 #include "ResourceObjects/Resource.h"
 #include "ui_ViewImage.h"
 
-class QWebView;
+class QWebEngineView;
 
 class ViewImage : public QDialog
 {
