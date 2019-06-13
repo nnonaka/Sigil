@@ -138,6 +138,7 @@ begin
   end;
 end;
 
+
 function NeedsVCRedistInstall: Boolean;
 // Return True if VC++ redist included with Sigil Installer needs to be installed.
 var

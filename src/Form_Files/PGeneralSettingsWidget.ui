@@ -66,8 +66,7 @@ mended.</string>
       <item row="0" column="0">
        <widget class="QCheckBox" name="MendOnOpen">
         <property name="toolTip">
-         <string>Mend when opening an Epub or HTML file, 
-and when switching from Book View to Code View.</string>
+         <string>Mend when opening an Epub or HTML file.</string>
         </property>
         <property name="text">
          <string>Open</string>
@@ -106,6 +105,34 @@ and when switching from Book View to Code View.</string>
         </property>
         <property name="text">
          <string>Epubs may access all remote resources types.</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3a">
+     <property name="toolTip">
+      <string>Determine if javascript is allowed to be used by Epubs</string>
+     </property>
+     <property name="title">
+      <string> Control Use of Javascript by Epubs.</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3a">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="AllowJavascript">
+        <property name="toolTip">
+         <string>Check to allow Epubs to use javascript.</string>
+        </property>
+        <property name="text">
+         <string>Epubs may use javascript.</string>
         </property>
         <property name="checked">
          <bool>false</bool>

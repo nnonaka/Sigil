@@ -47,7 +47,6 @@ TabManager::TabManager(QWidget *parent)
 {
     QTabBar *tab_bar = new TabBar(this);
     setTabBar(tab_bar);
-    connect(tab_bar, SIGNAL(TabBarDoubleClicked()),      this, SIGNAL(ToggleViewStateRequest()));
     connect(tab_bar, SIGNAL(TabBarClicked()),            this, SLOT(SetFocusInTab()));
     connect(tab_bar, SIGNAL(CloseOtherTabsRequest(int)), this, SLOT(CloseOtherTabs(int)));
     connect(this, SIGNAL(currentChanged(int)),         this, SLOT(EmitTabChanged()));
@@ -158,7 +157,7 @@ void TabManager::ReloadTabDataForResources(const QList<Resource *> &resources)
     }
 }
 
-void TabManager::ReopenTabs(MainWindow::ViewState view_state)
+void TabManager::ReopenTabs()
 {
     ContentTab *currentTab = GetCurrentContentTab();
     QList<Resource *> resources = GetTabResources();
@@ -166,9 +165,9 @@ void TabManager::ReopenTabs(MainWindow::ViewState view_state)
         CloseTabForResource(resource);
     }
     foreach(Resource *resource, resources) {
-        OpenResource(resource, -1, -1, QString(), view_state);
+        OpenResource(resource, -1, -1, QString());
     }
-    OpenResource(currentTab->GetLoadedResource(), -1, -1, QString(), view_state);
+    OpenResource(currentTab->GetLoadedResource(), -1, -1, QString());
 }
 
 
@@ -208,7 +207,6 @@ void TabManager::OpenResource(Resource *resource,
                               int line_to_scroll_to,
                               int position_to_scroll_to,
                               const QString &caret_location_to_scroll_to,
-                              MainWindow::ViewState view_state,
                               const QUrl &fragment,
                               bool precede_current_tab)
 {
@@ -218,7 +216,7 @@ void TabManager::OpenResource(Resource *resource,
 
     bool grab_focus = !precede_current_tab;
     ContentTab *new_tab = CreateTabForResource(resource, line_to_scroll_to, position_to_scroll_to,
-                          caret_location_to_scroll_to, view_state, fragment, grab_focus);
+                          caret_location_to_scroll_to, fragment, grab_focus);
 
     if (new_tab) {
         AddNewContentTab(new_tab, precede_current_tab);
@@ -228,8 +226,8 @@ void TabManager::OpenResource(Resource *resource,
         emit ShowStatusMessageRequest(message);
     }
 
-    // do not try to scroll Preview here as FlowTabs use delayed initialization
-    // instead the flowtab will handle this by itself
+    // do not Scroll the Preview in response as new Flow Tabs have
+    // delayed initialization.  Instead FlowTab itself will handle this
 }
 
 
@@ -401,12 +399,13 @@ bool TabManager::SwitchedToExistingTab(const Resource *resource,
     // If the resource is already opened in
     // some tab, then we just switch to it
     if (resource_index != -1) {
-        // the next line will cause a TabChanged signal to be emitted
-        // which will cause the Preview to be updated
+        // the next line will cause TabChanged to be emitted which will update Preview
+        // but to whatever location this tab has now now after scrolling
         setCurrentIndex(resource_index);
         QWidget *tab = widget(resource_index);
         Q_ASSERT(tab);
         tab->setFocus();
+
         FlowTab *flow_tab = qobject_cast<FlowTab *>(tab);
 
         if (flow_tab != NULL) {
@@ -420,7 +419,8 @@ bool TabManager::SwitchedToExistingTab(const Resource *resource,
                 flow_tab->ScrollToLine(line_to_scroll_to);
             }
 
-	    // Use FilteredCursorMoved signal instead of this
+
+            // manually update the Preview Location
 	    // flow_tab->EmitScrollPreviewImmediately();
 
             return true;
@@ -459,7 +459,6 @@ ContentTab *TabManager::CreateTabForResource(Resource *resource,
         int line_to_scroll_to,
         int position_to_scroll_to,
         const QString &caret_location_to_scroll_to,
-        MainWindow::ViewState view_state,
         const QUrl &fragment,
         bool grab_focus)
 {
@@ -473,7 +472,6 @@ ContentTab *TabManager::CreateTabForResource(Resource *resource,
             }
             tab = new FlowTab(html_resource,
                               fragment,
-                              view_state,
                               line_to_scroll_to,
                               position_to_scroll_to,
                               caret_location_to_scroll_to,

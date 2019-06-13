@@ -49,6 +49,9 @@
         <file>edit-redo_16px.png</file>
         <file>edit-redo_22px.png</file>
         <file>edit-redo_48px.png</file>
+        <file>edit-select-all_16px.png</file>
+        <file>edit-select-all_22px.png</file>
+        <file>edit-select-all_48px.png</file>
         <file>edit-undo_16px.png</file>
         <file>edit-undo_22px.png</file>
         <file>edit-undo_48px.png</file>
@@ -133,6 +136,9 @@
         <file>heading-6_16px.png</file>
         <file>heading-6_22px.png</file>
         <file>heading-6_48px.png</file>
+        <file>heading-all_16px.png</file>
+        <file>heading-all_22px.png</file>
+        <file>heading-all_48px.png</file>
         <file>heading-normal_16px.png</file>
         <file>heading-normal_22px.png</file>
         <file>heading-normal_48px.png</file>
@@ -154,6 +160,9 @@
         <file>insert-numbered-list_48px.png</file>
         <file>insert-special-character_22px.png</file>
         <file>insert-special-character_48px.png</file>
+        <file>inspect_16px.png</file>
+        <file>inspect_22px.png</file>
+        <file>inspect_48px.png</file>
         <file>list-add_16px.png</file>
         <file>list-add_22px.png</file>
         <file>list-add_48px.png</file>
@@ -168,14 +177,27 @@
         <file>plugin_22px_3pips.png</file>
         <file>plugin_22px_4pips.png</file>
         <file>plugin_22px_5pips.png</file>
+        <file>plugin_22px_6pips.png</file>
+        <file>plugin_22px_7pips.png</file>
+        <file>plugin_22px_8pips.png</file>
+        <file>plugin_22px_9pips.png</file>
+        <file>plugin_22px_10pips.png</file>
         <file>plugin_48px_1pips.png</file>
         <file>plugin_48px_2pips.png</file>
         <file>plugin_48px_3pips.png</file>
         <file>plugin_48px_4pips.png</file>
         <file>plugin_48px_5pips.png</file>
+        <file>plugin_48px_6pips.png</file>
+        <file>plugin_48px_7pips.png</file>
+        <file>plugin_48px_8pips.png</file>
+        <file>plugin_48px_9pips.png</file>
+        <file>plugin_48px_10pips.png</file>
         <file>process-stop_16px.png</file>
         <file>process-stop_22px.png</file>
         <file>process-stop_48px.png</file>
+        <file>reload-page_16px.png</file>
+        <file>reload-page_22px.png</file>
+        <file>reload-page_48px.png</file>
         <file>split-section_16px.png</file>
         <file>split-section_22px.png</file>
         <file>split-section_48px.png</file>

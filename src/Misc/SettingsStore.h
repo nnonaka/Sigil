@@ -116,8 +116,6 @@ public:
 
     bool spellCheckNumbers();
 
-    int viewState();
-
     /**
      * The name of the file containing user words
      *
@@ -134,6 +132,8 @@ public:
 
     int remoteOn();
 
+    int javascriptOn();
+
     int cleanOn();
 
     QStringList pluginMap();
@@ -143,7 +143,7 @@ public:
     /**
      * All appearance settings related to BookView.
      */
-    struct BookViewAppearance {
+    struct PreviewAppearance {
         QString font_family_standard;
         QString font_family_serif;
         QString font_family_sans_serif;
@@ -200,9 +200,9 @@ public:
     int appearancePrefsTabIndex();
 
     /**
-     * The default font to use for rendering Book View/Preview.
+     * The default font to use for rendering Preview.
      */
-    BookViewAppearance bookViewAppearance();
+    PreviewAppearance previewAppearance();
 
     /**
      * The appearance settings to use for editing in Code View.
@@ -228,7 +228,7 @@ public:
     int clipboardHistoryLimit();
 
     /**
-     * Clear all Book View, Code View and Special Characters settings back to their defaults.
+     * Clear all Preview, Code View and Special Characters settings back to their defaults.
      */
     void clearAppearanceSettings();
 
@@ -302,8 +302,6 @@ public slots:
     
     void setSpellCheckNumbers(bool enabled);
 
-    void setViewState(int state);
-
     /**
      * Set the name of the dictionary file to store user words.
      *
@@ -320,9 +318,11 @@ public slots:
 
     void setRemoteOn(int on);
 
+    void setJavascriptOn(int on);
+
     void setCleanOn(int on);
 
-    void setPluginMap(QStringList & map);
+    void setPluginMap(const QStringList & map);
 
     void setDefaultVersion(const QString &version);
 
@@ -334,7 +334,7 @@ public slots:
     /**
      * Set the default font settings to use for rendering Book View/Preview
      */
-    void setBookViewAppearance(const BookViewAppearance &book_view_appearance);
+    void setPreviewAppearance(const PreviewAppearance &preview_appearance);
     /**
      * Set the appearance settings to use for editing in Code View
      */

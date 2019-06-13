@@ -55,7 +55,7 @@ endif()
 #############################################################################
 
 # Qt5 packages minimum version 5.4
-find_package(Qt5 5.4 COMPONENTS Core Network Svg WebKit WebKitWidgets Widgets Xml XmlPatterns Concurrent PrintSupport LinguistTools)
+find_package(Qt5 5.4 COMPONENTS Core Network Svg WebEngine WebEngineWidgets Widgets Xml XmlPatterns Concurrent PrintSupport LinguistTools)
 set(CMAKE_AUTOMOC ON)
 
 set( MAIN_FILES
@@ -204,6 +204,8 @@ set( DIALOG_FILES
     Dialogs/SpellcheckEditor.h
     Dialogs/ViewImage.cpp
     Dialogs/ViewImage.h
+    Dialogs/Inspector.cpp
+    Dialogs/Inspector.h
     )
 
 set( EXPORTER_FILES
@@ -232,11 +234,6 @@ set( IMPORTER_FILES
     Importers/ImportTXT.cpp
     Importers/ImportTXT.h
     )
-
-
-# These may now be obsolete if so remove them
-#    Misc/HTMLPrettyPrint.cpp
-#    Misc/HTMLPrettyPrint.h
     
 set( MISC_FILES    
     Misc/AppEventFilter.cpp
@@ -269,8 +266,6 @@ set( MISC_FILES
     Misc/PluginDB.h
     Misc/QCodePage437Codec.cpp
     Misc/QCodePage437Codec.h
-    Misc/RasterizeImageResource.cpp
-    Misc/RasterizeImageResource.h
     Misc/SearchOperations.cpp
     Misc/SearchOperations.h
     Misc/Language.cpp
@@ -283,6 +278,7 @@ set( MISC_FILES
     Misc/MarcRelators.cpp
     Misc/MarcRelators.h
     Misc/UILanguage.cpp
+    Misc/UILanguage.h
     Misc/SettingsStore.cpp
     Misc/SettingsStore.h
     Misc/SpellCheck.cpp
@@ -308,6 +304,7 @@ set( MISC_FILES
     Misc/ValidationResult.cpp
     Misc/WrapIndicator.h
     Misc/XMLEntities.cpp
+    Misc/XMLEntities.h
     Misc/PyObjectPtr.h
     Misc/PyObjectPtr.cpp
     Misc/EmbeddedPython.h
@@ -349,21 +346,21 @@ set( SPCRE_FILES
     )
 
 set( VIEW_EDITOR_FILES
-    ViewEditors/BookViewEditor.cpp
-    ViewEditors/BookViewEditor.h
-    ViewEditors/BookViewPreview.cpp
-    ViewEditors/BookViewPreview.h
     ViewEditors/CodeViewEditor.cpp
     ViewEditors/CodeViewEditor.h
+    ViewEditors/WebEngPage.cpp
+    ViewEditors/WebEngPage.h 
+    ViewEditors/ViewPreview.cpp
+    ViewEditors/ViewPreview.h
     ViewEditors/LineNumberArea.cpp
     ViewEditors/LineNumberArea.h
     ViewEditors/Searchable.cpp
     ViewEditors/Searchable.h
     ViewEditors/Zoomable.h 
-    ViewEditors/ViewEditor.h     
-    ViewEditors/ViewWebPage.cpp
-    ViewEditors/ViewWebPage.h 
-    )
+    ViewEditors/ElementIndex.h
+    ViewEditors/ViewEditor.h
+    ViewEditors/Viewer.h     
+     )
 
 set( MAINUI_FILES 
     MainUI/MainApplication.cpp
@@ -683,7 +680,7 @@ endif()
 
 # No need to explicity link Qt5::WinMain or to use the qt5_use_modules macro since CMAKE 2.8.11. We require CMAKE 3.0.0
 target_link_libraries( ${PROJECT_NAME} ${HUNSPELL_LIBRARIES} ${PCRE_LIBRARIES} ${GUMBO_LIBRARIES} ${MINIZIP_LIBRARIES} ${PYTHON_LIBRARIES}
-    Qt5::Widgets  Qt5::Xml  Qt5::XmlPatterns  Qt5::PrintSupport  Qt5::Svg  Qt5::WebKit  Qt5::WebKitWidgets  Qt5::Network  Qt5::Concurrent )
+    Qt5::Widgets  Qt5::Xml  Qt5::XmlPatterns  Qt5::PrintSupport  Qt5::Svg  Qt5::WebEngine  Qt5::WebEngineWidgets  Qt5::Network  Qt5::Concurrent )
 
 #############################################################################
 
@@ -819,17 +816,17 @@ elseif (MSVC)
 
     # windeployqt
     add_custom_command( TARGET ${TARGET_FOR_COPY} POST_BUILD COMMAND
-	    windeployqt.exe --release --no-webkit2 --no-translations --no-compiler-runtime --dir ${MAIN_PACKAGE_DIR} --libdir ${MAIN_PACKAGE_DIR} ${MAIN_PACKAGE_DIR}/${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX} )
+	    windeployqt.exe --release --no-translations --no-compiler-runtime --dir ${MAIN_PACKAGE_DIR} --libdir ${MAIN_PACKAGE_DIR} ${MAIN_PACKAGE_DIR}/${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX} )
 
-    set( LIBXML2 ${QT_INSTALL_BINS}/libxml2.dll )
-    if ( EXISTS ${LIBXML2} )
-        add_custom_command( TARGET ${TARGET_FOR_COPY} POST_BUILD COMMAND cmake -E copy ${LIBXML2} ${MAIN_PACKAGE_DIR} )
-    endif()
+    #set( LIBXML2 ${QT_INSTALL_BINS}/libxml2.dll )
+    #if ( EXISTS ${LIBXML2} )
+    #    add_custom_command( TARGET ${TARGET_FOR_COPY} POST_BUILD COMMAND cmake -E copy ${LIBXML2} ${MAIN_PACKAGE_DIR} )
+    #endif()
 
-    set( LIBXSLT ${QT_INSTALL_BINS}/libxslt.dll )
-    if ( EXISTS ${LIBXSLT} )
-        add_custom_command( TARGET ${TARGET_FOR_COPY} POST_BUILD COMMAND cmake -E copy ${LIBXSLT} ${MAIN_PACKAGE_DIR} )
-    endif()
+    #set( LIBXSLT ${QT_INSTALL_BINS}/libxslt.dll )
+    #if ( EXISTS ${LIBXSLT} )
+    #    add_custom_command( TARGET ${TARGET_FOR_COPY} POST_BUILD COMMAND cmake -E copy ${LIBXSLT} ${MAIN_PACKAGE_DIR} )
+    #endif()
 
     # Copy the translation qm files
     add_custom_command( TARGET ${TARGET_FOR_COPY} PRE_BUILD COMMAND cmake -E make_directory ${MAIN_PACKAGE_DIR}/translations/ )
@@ -890,7 +887,7 @@ elseif (MSVC)
     add_custom_command( TARGET ${TARGET_FOR_COPY} PRE_BUILD
                         COMMAND cmake -E copy ${EXE_PATH} ${MAIN_PACKAGE_DIR} )
 
-    set( VCREDIST_VER "2017" )
+    set( VCREDIST_VER "2017" )                        
     # We need to copy the CRT dlls
     # Add -DWIN_INSTALLER_USE_64BIT_CRT=1 to the cmake call if you want to build
     # an installer for the x64 verison of Sigil. This will make sure that the

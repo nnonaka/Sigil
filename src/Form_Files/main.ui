@@ -205,7 +205,6 @@
     <addaction name="actionTextDirectionRTL"/>
     <addaction name="actionTextDirectionDefault"/>
     <addaction name="separator"/>
-    <addaction name="actionShowTag"/>
     <addaction name="actionRemoveFormatting"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -219,9 +218,6 @@
     </widget>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
-    <addaction name="actionBookView"/>
-    <addaction name="actionCodeView"/>
-    <addaction name="actionToggleViewState"/>
     <addaction name="separator"/>
     <addaction name="actionZoomIn"/>
     <addaction name="actionZoomOut"/>
@@ -396,19 +392,6 @@
    <addaction name="separator"/>
    <addaction name="actionFind"/>
   </widget>
-  <widget class="QToolBar" name="toolBarViews">
-   <property name="windowTitle">
-    <string>View</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionBookView"/>
-   <addaction name="actionCodeView"/>
-  </widget>
   <widget class="QToolBar" name="toolBarInsertions">
    <property name="windowTitle">
     <string>Insert</string>
@@ -463,6 +446,14 @@
    <addaction name="actionMetaEditor"/>
    <addaction name="actionGenerateTOC"/>
    <addaction name="actionSpellcheckEditor"/>
+  </widget>
+  <widget class="QToolBar" name="toolBarPlugins">
+   <property name="windowTitle">
+    <string>Plugins Set 1</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
@@ -471,6 +462,22 @@
    <addaction name="actionPlugin3"/>
    <addaction name="actionPlugin4"/>
    <addaction name="actionPlugin5"/>
+  </widget>
+  <widget class="QToolBar" name="toolBarPlugins2">
+   <property name="windowTitle">
+    <string>Plugins Set 2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPlugin6"/>
+   <addaction name="actionPlugin7"/>
+   <addaction name="actionPlugin8"/>
+   <addaction name="actionPlugin9"/>
+   <addaction name="actionPlugin10"/>
   </widget>
   <widget class="QToolBar" name="toolBarHeadings">
    <property name="windowTitle">
@@ -482,13 +489,22 @@
    <attribute name="toolBarBreak">
     <bool>true</bool>
    </attribute>
-   <addaction name="actionHeading1"/>
-   <addaction name="actionHeading2"/>
-   <addaction name="actionHeading3"/>
-   <addaction name="actionHeading4"/>
-   <addaction name="actionHeading5"/>
-   <addaction name="actionHeading6"/>
-   <addaction name="actionHeadingNormal"/>
+   <widget class="QToolButton" name="tbHeadings">
+    <property name="icon">
+    <iconset resource="../Resource_Files/main/main.qrc">
+     <normaloff>:/main/heading-all_48px.png</normaloff>:/main/heading-all_48px.png</iconset>
+   </property>
+    <property name="toolTip">
+      <string>set Heading Level of Selected Text</string>
+   </property>
+    <addaction name="actionHeading1"/>
+    <addaction name="actionHeading2"/>
+    <addaction name="actionHeading3"/>
+    <addaction name="actionHeading4"/>
+    <addaction name="actionHeading5"/>
+    <addaction name="actionHeading6"/>
+    <addaction name="actionHeadingNormal"/>
+  </widget>
   </widget>
   <widget class="QToolBar" name="toolBarTextFormats">
    <property name="windowTitle">
@@ -558,10 +574,18 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionCasingLowercase"/>
-   <addaction name="actionCasingUppercase"/>
-   <addaction name="actionCasingTitlecase"/>
-   <addaction name="actionCasingCapitalize"/>
+   <widget class="QToolButton" name="tbCase">
+    <property name="text">
+     <string>aA</string>
+    </property>
+    <property name="toolTip">
+     <string>set Case of Selected Text</string>
+    </property>
+    <addaction name="actionCasingLowercase"/>
+    <addaction name="actionCasingUppercase"/>
+    <addaction name="actionCasingTitlecase"/>
+    <addaction name="actionCasingCapitalize"/>
+   </widget>
   </widget>
   <widget class="QToolBar" name="toolBarTextDirection">
    <property name="windowTitle">
@@ -608,6 +632,7 @@
    <addaction name="actionClip19"/>
    <addaction name="actionClip20"/>
   </widget>
+
   <action name="actionNew">
    <property name="icon">
     <iconset resource="../Resource_Files/main/main.qrc">
@@ -982,51 +1007,6 @@
 &lt;p style=&quot;margin-left: 0.5em;&quot;&gt;Directly edit the existing Table of Contents.&lt;/p&gt;</string>
    </property>
   </action>
-  <action name="actionBookView">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../Resource_Files/main/main.qrc">
-     <normaloff>:/main/view-book_48px.png</normaloff>:/main/view-book_48px.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Book View</string>
-   </property>
-   <property name="toolTip">
-    <string>&lt;p style=&quot;padding-top: 0.5em;&quot; &gt;&lt;b&gt;Book View&lt;/b&gt;&lt;/p&gt;
-
-&lt;p style=&quot;margin-left: 0.5em;&quot;&gt;Edit and display the files in your book as they will appear to readers.&lt;/p&gt;</string>
-   </property>
-  </action>
-  <action name="actionCodeView">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../Resource_Files/main/main.qrc">
-     <normaloff>:/main/view-code_48px.png</normaloff>:/main/view-code_48px.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Code View</string>
-   </property>
-   <property name="toolTip">
-    <string>&lt;p style=&quot;padding-top: 0.5em;&quot; &gt;&lt;b&gt;Code View&lt;/b&gt;&lt;/p&gt;
-
-&lt;p style=&quot;margin-left: 0.5em;&quot;&gt;Edit and display the actual contents of the files in your book, including the formatting codes that control how your book will appear to readers.&lt;/p&gt;</string>
-   </property>
-  </action>
-  <action name="actionToggleViewState">
-   <property name="text">
-    <string>&amp;Toggle View State</string>
-   </property>
-   <property name="toolTip">
-    <string>Toggle Book View to Code View or Code View to Book View</string>
-   </property>
-   <property name="shortcut">
-    <string>F2</string>
-   </property>
-  </action>
   <action name="actionSplitSection">
    <property name="icon">
     <iconset resource="../Resource_Files/main/main.qrc">
@@ -1259,17 +1239,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
-   </property>
-  </action>
-  <action name="actionShowTag">
-   <property name="text">
-    <string>Sho&amp;w Tag</string>
-   </property>
-   <property name="toolTip">
-    <string>Show the enclosing tag HTML for the cursor position in Book View.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+T</string>
    </property>
   </action>
   <action name="actionFind">
@@ -1988,7 +1957,7 @@
    </property>
    <property name="icon">
     <iconset resource="../Resource_Files/main/main.qrc">
-     <normaloff>:/main/heading-1_48px.png</normaloff>:/main/heading-1_43px.png</iconset>
+     <normaloff>:/main/heading-1_48px.png</normaloff>:/main/heading-1_48px.png</iconset>
    </property>
    <property name="text">
     <string>Heading &amp;1</string>
@@ -2326,6 +2295,51 @@
    </property>
    <property name="text">
     <string>Run Plugin 5</string>
+   </property>
+  </action>
+  <action name="actionPlugin6">
+   <property name="icon">
+    <iconset resource="../Resource_Files/main/main.qrc">
+     <normaloff>:/main/plugin_48px_6pips.png</normaloff>:/main/plugin_48px_6pips.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run Plugin 6</string>
+   </property>
+  </action>
+  <action name="actionPlugin7">
+   <property name="icon">
+    <iconset resource="../Resource_Files/main/main.qrc">
+     <normaloff>:/main/plugin_48px_7pips.png</normaloff>:/main/plugin_48px_7pips.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run Plugin 7</string>
+   </property>
+  </action>
+  <action name="actionPlugin8">
+   <property name="icon">
+    <iconset resource="../Resource_Files/main/main.qrc">
+     <normaloff>:/main/plugin_48px_8pips.png</normaloff>:/main/plugin_48px_8pips.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run Plugin 8</string>
+   </property>
+  </action>
+  <action name="actionPlugin9">
+   <property name="icon">
+    <iconset resource="../Resource_Files/main/main.qrc">
+     <normaloff>:/main/plugin_48px_9pips.png</normaloff>:/main/plugin_48px_9pips.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run Plugin 9</string>
+   </property>
+  </action>
+  <action name="actionPlugin10">
+   <property name="icon">
+    <iconset resource="../Resource_Files/main/main.qrc">
+     <normaloff>:/main/plugin_48px_10pips.png</normaloff>:/main/plugin_48px_10pips.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run Plugin 10</string>
    </property>
   </action>
   <action name="actionMendPrettifyHTML">

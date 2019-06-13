@@ -1,8 +1,6 @@
 /************************************************************************
 **
-**  Copyright (C) 2012 John Schember <john@nachtimwald.com>
-**  Copyright (C) 2012 Dave Heiland
-**  Copyright (C) 2012 Grant Drake
+**  Copyright (C) 2019 Kevin B. Hendricks, Stratford, Ontario Canada
 **
 **  This file is part of Sigil.
 **
@@ -21,21 +19,34 @@
 **
 *************************************************************************/
 
-#ifdef DEBUG
-#include <QDebug>
-#endif
+#pragma once
+#ifndef WEBENGPAGE_H
+#define WEBENGPAGE_H
 
-#include "ViewEditors/ViewWebPage.h"
+#include <QObject>
+#include <QUrl>
+#include <QtWebEngineWidgets/QWebEnginePage>
 
-ViewWebPage::ViewWebPage(QObject *parent)
-    : QWebPage(parent)
+class WebEngPage : public QWebEnginePage
 {
-}
+    Q_OBJECT
 
-void ViewWebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
-{
-#ifdef DEBUG
-    const QString logEntry = message + " on line:" % QString::number(lineNumber) % " Source:" + sourceID;
-    qDebug() << "Javascript error: " << logEntry;
-#endif
-}
+public:
+    WebEngPage(QObject *parent = 0);
+
+    bool acceptNavigationRequest(const QUrl & url, QWebEnginePage::NavigationType ntype, bool isMainFrame);
+    void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, 
+                                  const QString & message, int lineNumber, const QString & sourceID);
+
+signals:
+    void LinkClicked(const QUrl &url);
+
+private slots:
+    void EmitLinkClicked();    
+
+private:
+    QUrl m_url;
+};
+
+#endif // WEBENGPAGE_H
+

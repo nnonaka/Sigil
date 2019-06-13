@@ -1,6 +1,6 @@
 /************************************************************************
 **
-**  Copyright (C) 2018, 2019  Kevin B. Hendricks, Stratford, Ontario, Canada
+**  Copyright (C) 2018-2019  Kevin B. Hendricks, Stratford, Ontario, Canada
 **  Copyright (C) 2009, 2010, 2011  Strahinja Markovic  <strahinja.markovic@gmail.com>
 **
 **  This file is part of Sigil.
@@ -52,7 +52,6 @@
 # include <QTextStream>
 # include <QProcessEnvironment>
 # include <QtWidgets/QPlainTextEdit>
-# include "ViewEditors/BookViewPreview.h"
 static const QString WIN_CLIPBOARD_ERROR = "QClipboard::setMimeData: Failed to set data on clipboard";
 static const int RETRY_DELAY_MS = 5;
 #endif
@@ -160,15 +159,6 @@ void MessageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 
                     if (textEdit) {
                         QTimer::singleShot(RETRY_DELAY_MS, textEdit, SLOT(copy()));
-                        break;
-                    }
-
-                    // BV/PV copying is a little different, in that the focus widget is set to
-                    // the parent editor (unlike CodeView's QPlainTextEdit).
-                    BookViewPreview *bookViewPreview = dynamic_cast<BookViewPreview *>(widget);
-
-                    if (bookViewPreview) {
-                        QTimer::singleShot(RETRY_DELAY_MS, bookViewPreview, SLOT(copy()));
                         break;
                     }
 
@@ -338,16 +328,16 @@ int main(int argc, char *argv[])
         QStringList arguments = QCoreApplication::arguments();
 
 #ifdef Q_OS_MAC
-        // now process main app events so that any startup 
+	// now process main app events so that any startup 
         // FileOpen event will be processed for macOS
-        QCoreApplication::processEvents();
+	QCoreApplication::processEvents();
 
-        QString filepath = filter->getInitialFilePath();
+	QString filepath = filter->getInitialFilePath();
 
-        // if one found append it to argv for processing as normal
-        if ((arguments.size() == 1) && !filepath.isEmpty()) {
-            arguments << QFileInfo(filepath).absoluteFilePath();
-        }
+	// if one found append it to argv for processing as normal
+	if ((arguments.size() == 1) && !filepath.isEmpty()) {
+	    arguments << QFileInfo(filepath).absoluteFilePath();
+	}
 #endif
 
         if (arguments.contains("-t")) {

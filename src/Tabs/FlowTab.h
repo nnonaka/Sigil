@@ -1,5 +1,6 @@
 /************************************************************************
 **
+**  Copyright (C) 2019 Kevin B. Hendricks, Stratford, Ontario, Canada
 **  Copyright (C) 2012 John Schember <john@nachtimwald.com>
 **  Copyright (C) 2012  Dave Heiland
 **  Copyright (C) 2012  Grant Drake
@@ -35,19 +36,15 @@
 #include "Tabs/ContentTab.h"
 #include "Tabs/WellFormedContent.h"
 
-class QStackedWidget;
 class QUrl;
-class BookViewEditor;
 class CodeViewEditor;
 class HTMLResource;
 class Resource;
-class ViewEditor;
 class WellFormedCheckComponent;
 
 /**
  * A tab widget used for displaying XHTML section.
- * It can display the section in both rendered view (Book View)
- * and raw code view (Code View).
+ * It supports raw code view (Code View).
  */
 class FlowTab : public ContentTab, public WellFormedContent
 {
@@ -60,13 +57,11 @@ public:
      *
      * @param resource The resource this tab will be displaying.
      * @param fragment The URL fragment ID to which the tab should scroll.
-     * @param view_state In which View should the resource open or switch to.
      * @param line_to_scroll_to To which line should the resource scroll.
      * @param parent The parent of this QObject.
      */
     FlowTab(HTMLResource *resource,
             const QUrl &fragment,
-            MainWindow::ViewState view_state,
             int line_to_scroll_to = -1,
             int position_to_scroll_to = -1,
             QString caret_location_to_scroll_to = QString(),
@@ -76,8 +71,6 @@ public:
     ~FlowTab();
 
     // Overrides inherited from ContentTabs
-
-    MainWindow::ViewState GetViewState();
 
     bool IsModified();
 
@@ -104,11 +97,9 @@ public:
 
     bool InsertFileEnabled();
 
-    bool ViewStatesEnabled();
-
-    QList<ViewEditor::ElementIndex> GetCaretLocation();
+    QList<ElementIndex> GetCaretLocation();
     QString GetCaretLocationUpdate() const;
-    void GoToCaretLocation(QList<ViewEditor::ElementIndex> location);
+    void GoToCaretLocation(QList<ElementIndex> location);
 
     QString GetDisplayedCharacters();
     QString GetText();
@@ -125,12 +116,10 @@ public:
 
     Searchable *GetSearchableContent();
 
-    bool SetViewState(MainWindow::ViewState new_view_state);
-
     bool IsLoadingFinished();
 
     /**
-     * Scrolls the tab to the specified fragment (if in Book View).
+     * Scrolls the tab to the specified fragment.
      *
      * @param fragment The URL fragment ID to which the tab should scroll.
      */
@@ -238,7 +227,6 @@ public slots:
     void TextDirectionRightToLeft();
     void TextDirectionDefault();
 
-    void ShowTag();
     void RemoveFormatting();
 
     void ChangeCasing(const Utility::Casing casing);
@@ -301,13 +289,10 @@ signals:
     void UpdatePreviewImmediately();
     void ScrollPreviewImmediately();
 
-    void InspectElement();
-
 public slots:
     void EmitUpdatePreview();
     void EmitUpdatePreviewImmediately();
     void EmitScrollPreviewImmediately();
-
 
 private slots:
 
@@ -354,16 +339,13 @@ private slots:
     void ResourceTextChanging();
 
 private:
-    void CreateBookViewIfRequired(bool is_delayed_load = true);
     void CreateCodeViewIfRequired(bool is_delayed_load = true);
 
-    void BookView();
     void CodeView();
 
     /**
      * Connects all the required signals to their respective slots.
      */
-    void ConnectBookViewSignalsToSlots();
     void ConnectCodeViewSignalsToSlots();
 
 
@@ -391,33 +373,10 @@ private:
     HTMLResource *m_HTMLResource;
 
     /**
-     * The splitter widget that separates the two Views.
-     */
-    QStackedWidget *m_views;
-
-    /**
-     * The Book View Editor.
-     * Displays and edits the rendered state of the HTML.
-     */
-    BookViewEditor *m_wBookView;
-
-    /**
      * The Code View Editor.
      * Displays and edits the raw code.
      */
     CodeViewEditor *m_wCodeView;
-
-    /**
-     * This is used in a few different ways.
-     *
-     * 1) We store the requested view state for loading the document.
-     * 2) We store the current view state.
-     * 3) We compare the state of the view when entering to this in order
-     *    to determine if we have changed the view (BV, CV) in order to
-     *    load the latest content into the view.
-     */
-    MainWindow::ViewState m_ViewState;
-    MainWindow::ViewState m_previousViewState;
 
     /**
      * The component used to display a dialog about
@@ -432,8 +391,6 @@ private:
     bool m_safeToLoad;
 
     bool m_initialLoad;
-
-    bool m_bookViewNeedsReload;
 
     bool m_grabFocus;
 
