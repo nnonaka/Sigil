@@ -485,7 +485,6 @@ private slots:
     void UpdatePreviewCSSRequest();
     void ScrollPreview();
     void UpdatePreview();
-    void ScrollPreview();
     void InspectHTML();
 
     /**

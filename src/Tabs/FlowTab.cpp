@@ -320,11 +320,6 @@ void FlowTab::EmitScrollPreviewImmediately()
       emit ScrollPreviewImmediately();
 }
 
-void FlowTab::EmitScrollPreviewImmediately()
-{
-    emit ScrollPreviewImmediately();
-}
-
 void FlowTab::EmitUpdateCursorPosition()
 {
     DBG qDebug() << "FlowTab emiting UpdateCursorPosition from EmitUpdateCursorPosition";
